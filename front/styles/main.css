@@ -90,7 +90,7 @@ label.active[for = "video-input"]
 {
     display: block;
     margin: 20px auto;
-    width: 800px;
+    width: 100%;
     display: flex;
     justify-content: center;
 }
@@ -98,6 +98,88 @@ video
 {
     background-size: contain;
 
-    max-height: 450px;
-    height: 450px;
+    max-height: 400px;
+    height: 350px;
+    max-width: 600px;
+    
+    margin: 0 150px 0 0;
+    border-radius: 20px;
+}
+.options-container
+{
+    width: fit-content;
+    border: 4px dashed var(--color10);
+    border-radius: 20px;
+    margin: 0 50px;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    font-size: 22px;
+}
+.option
+{
+    display: block;
+    width: 315px;
+    margin: 20px 30px;
+    display: flex;
+    justify-content:space-between;
+}
+
+#time-end, #time-start
+{
+    border: 2px solid var(--color10);
+    border-radius: 10px;
+    outline: none;
+}
+.options-container input
+{
+    transform: scale(1.3);
+}
+.options-container label
+{
+    background-color: var(--color30);
+}
+.options-container .start-encoding
+{
+    outline: none;
+    border: none;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 24px;
+    padding: 10px 20px;
+    margin: 0 auto;
+    background-image: linear-gradient(180deg,var(--color10) -200%,var(--color60));
+    border-radius: 20px;
+    cursor: pointer;
+}
+#progress
+{
+    display: none;
+}
+#progress.active
+{
+    position: relative;
+    display: block;
+    width: 80%;
+    background-color: var(--color30);
+    border: 3px solid var(--color10);
+    border-radius: 30px;
+    margin: 0 auto;
+}
+#bar
+{
+    border-radius: 30px;
+    z-index: -1;
+    width: 0;
+    height: 30px;
+    background-color: var(--color10);
+    transition: 1s;
+}
+#percentage
+{
+    width: 100%;
+    position: absolute;
+    top: -2em;
+    text-align: center;
+    font-size: 24px;
 }

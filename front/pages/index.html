@@ -31,10 +31,34 @@
         <div class="main-container">
             <div class="header">Обрезка видео</div>
             <div class="drop-container">
-                <input id = "video-input" type="file" accept="video/mp4,video/x-m4v,video/*">
+                <input id = "video-input" type="file" accept="video/mp4,video/x-m4v,video/*,video/x-matroska,.mkv">
                 <label for = "video-input" class="active"></label>
+                <div id="progress">
+                    <div id="bar">
+                    </div>
+                    <div id="percentage">0.0%</div>
+                </div>
                 <div class = "video-container">
-                    <video controls></video>
+                    <div class = "options-container">
+                        <div class="option">
+                            <label for = "time-start">Обрезать с </label>
+                            <input id = "time-start" type="time" min="00:00:00" max="10:00:00" step="1" value="00:00:00">
+                        </div>
+                        <div class="option">
+                            <label for = "time-end">Обрезать до</label>
+                            <input id = "time-end" type="time" min="00:00:00" max="10:00:00" step="1" value="00:00:00"> 
+                        </div>
+                        <div class="option">
+                            <label for = "quality-checkbox">Быстрая обрезка</label>
+                            <input id = "quality-checkbox" type= "checkbox">
+                        </div>
+                        <div class="option">
+                            <button class="start-encoding">Начать</button>
+                        </div>
+                            
+                       
+                    </div>
+                    <video controls controlsList="nodownload"></video>
                 </div>
 
             </div>
