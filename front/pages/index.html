@@ -21,9 +21,6 @@
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,400;0,500;1,100&display=swap" rel="stylesheet">
         <link rel="stylesheet" href = "/styles/main.css">
         <script src="/node_modules/@ffmpeg/ffmpeg/dist/ffmpeg.min.js"></script>
-        <script> 
-            
-        </script>
         <script src = "/scripts/main.js"></script>
     </head>
     <body>
@@ -49,8 +46,25 @@
                             <input id = "time-end" type="time" min="00:00:00" max="10:00:00" step="1" value="00:00:00"> 
                         </div>
                         <div class="option">
-                            <label for = "quality-checkbox">Быстрая обрезка</label>
+                            <label for = "quality-checkbox">Покадровый рендеринг</label>
                             <input id = "quality-checkbox" type= "checkbox">
+                        </div>
+                        <div class="option">
+                            <fieldset>
+                                <legend>Выберите выходное соотношение</legend>
+                                <div>
+                                    <input type="radio" id="16_9" name="ratio" value = "16:9" checked>
+                                    <label for="16_9">16x9</label>
+                                </div>
+                                <div>
+                                    <input type="radio" id="9_16"  name="ratio" value = "9:16">
+                                    <label for="9_16">9x16</label>
+                                  </div>
+                                <div>
+                                    <input type="radio" id="1_1"  name="ratio" value = "1:1" >
+                                    <label for="1_1">1x1</label>
+                                </div>
+                            </fieldset>
                         </div>
                         <div class="option">
                             <button class="start-encoding">Начать</button>
@@ -58,7 +72,15 @@
                             
                        
                     </div>
-                    <video controls controlsList="nodownload"></video>
+                    
+                    <div class="video-group">
+                        <video controls></video>
+                        <div class="slider-container">
+                            <input id = "first-slider" type="range" min="0" step="1" max="10" >
+                            <input id = "second-slider" type="range" min="0" step="1" max="10" >
+                          </div>
+                    </div>
+                    
                 </div>
 
             </div>

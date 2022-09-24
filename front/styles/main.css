@@ -11,7 +11,7 @@ html
 }
 body
 {
-    --color60: #effffd;
+    --color60: #dbfffb;
     --color30: #fff;
     --color10: #14c1f0;
     width: 100%;
@@ -34,8 +34,6 @@ body
     margin: 30px auto;
     border-radius: 0 0 30px 30px;
     position: relative;
-    display: flex;
-    flex-direction: column;
 
 }   
 .header
@@ -57,7 +55,8 @@ body
     border-radius: 30px;
     margin: 15px 30px;
     position: relative;
-    height: 100%;
+    height: 80%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -88,39 +87,44 @@ label.active[for = "video-input"]
 }
 .video-container.active
 {
-    display: block;
+
     margin: 20px auto;
     width: 100%;
+    height: 100%;
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+}
+.video-group
+{
+    position: relative;
+
+
+    max-width: 100%;
+
+    margin: 20px 0;
 }
 video
 {
+    max-height: 80%;
+    border-radius: 20px 20px 0 0;
     background-size: contain;
-
-    max-height: 400px;
-    height: 350px;
-    max-width: 600px;
-    
-    margin: 0 150px 0 0;
-    border-radius: 20px;
 }
 .options-container
 {
     width: fit-content;
     border: 4px dashed var(--color10);
     border-radius: 20px;
-    margin: 0 50px;
+    margin: 20px 50px;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-    font-size: 22px;
+    font-size: 18px;
 }
 .option
 {
     display: block;
     width: 315px;
-    margin: 20px 30px;
+    margin: 10px 30px;
     display: flex;
     justify-content:space-between;
 }
@@ -183,3 +187,58 @@ video
     text-align: center;
     font-size: 24px;
 }
+
+
+.slider-container{
+    position: relative;
+    pointer-events: none;
+  }
+  
+  .slider-container input[type="range"]{
+    height: 5em;
+    display: block;
+    margin: 0;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
+    border: 2px solid var(--color10);
+  }
+  
+  .slider-container input[type="range"]:last-child{
+    margin-top: -5em;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    pointer-events: all;
+  }
+  input[type="range"]::-moz-range-thumb {
+    pointer-events: all;
+  }
+  input[type="range"]::-ms-thumb {
+    pointer-events: all;
+  }
+
+
+  input[type='range'] {
+    overflow: hidden;
+    -webkit-appearance: none;
+    background-color: var(--color60);
+
+  }
+  
+  input[type='range']::-webkit-slider-runnable-track {
+    -webkit-appearance: none;
+    color: #13bba4;
+  }
+  
+  input[type='range']::-webkit-slider-thumb {
+    width: 7px;
+    -webkit-appearance: none;
+    height: 5em;
+    cursor: ew-resize;
+    background: rgb(59, 58, 133);
+    box-shadow: 0 0 3px rgb(59, 58, 133);
+    margin: 0;
+    padding: 0;
+    
+  }
