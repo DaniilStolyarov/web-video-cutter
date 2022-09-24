@@ -26,7 +26,7 @@
     <body>
         
         <div class="main-container">
-            <div class="header">Обрезка видео</div>
+            <div class="header">Редактор видео</div>
             <div class="drop-container">
                 <input id = "video-input" type="file" accept="video/mp4,video/x-m4v,video/*,video/x-matroska,.mkv">
                 <label for = "video-input" class="active"></label>
@@ -48,6 +48,10 @@
                         <div class="option">
                             <label for = "quality-checkbox">Покадровый рендеринг</label>
                             <input id = "quality-checkbox" type= "checkbox">
+                        </div>
+                        <div class="option">
+                            <label for = "logo">Поместить логотип</label>
+                            <input id = "logo" type= "file" accept="image/png, image/gif, image/jpeg">
                         </div>
                         <div class="option">
                             <fieldset>
@@ -80,12 +84,12 @@
                             <input id = "second-slider" type="range" min="0" step="1" max="10" >
                           </div>
                     </div>
-                    <div class="video-list">
+                    <!-- <div class="video-list">
                         <div class="video-name-container">
                         </div>
                         <input id = "video-add" type="file" accept="video/mp4,video/x-m4v,video/*,video/x-matroska,.mkv" >
                         <label for = "video-add" class="active"></label>
-                    </div>
+                    </div> -->
                     
                 </div>
 

@@ -92,16 +92,16 @@ label.active[for = "video-input"]
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 .video-group
 {
     position: relative;
-
+    
 
     max-width: 100%;
 
-    margin: 20px 0;
+    margin: 20px 40px;
 }
 video
 {
@@ -114,7 +114,7 @@ video
     width: fit-content;
     border: 4px dashed var(--color10);
     border-radius: 20px;
-    margin: 20px 30px;
+    margin: 20px 20px 20px 50px;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
@@ -123,8 +123,8 @@ video
 .option
 {
     display: block;
-    width: 275px;
-    margin: 10px 20px;
+    width: 300px;
+    margin: 15px 30px;
     display: flex;
     justify-content:space-between;
 }
@@ -152,9 +152,10 @@ video
     font-size: 24px;
     padding: 10px 20px;
     margin: 0 auto;
-    background-image: linear-gradient(180deg,var(--color10) -200%,var(--color60));
+    background:  linear-gradient(180deg, #b5eaf8, #49cced);
     border-radius: 20px;
     cursor: pointer;
+    color: white;
 }
 #progress
 {
@@ -223,7 +224,7 @@ video
   input[type='range'] {
     overflow: hidden;
     -webkit-appearance: none;
-    background-color: var(--color30);
+    background: linear-gradient(180deg, #b5eaf8, #49cced);
 
   }
   
@@ -237,8 +238,8 @@ video
     -webkit-appearance: none;
     height: 7em;
     cursor: ew-resize;
-    background: rgb(64, 169, 255);
-    box-shadow: 5px 0px 10px 0px rgb(64, 169, 255);
+    background: var(--color30);
+    box-shadow: 7px 0px 5px 0px var(--color30);
     margin: 0;
     padding: 0;
     
@@ -246,7 +247,7 @@ video
   #first-slider::-webkit-slider-thumb
   {
 
-    box-shadow: -5px 0px 10px 0px rgb(64, 169, 255);
+    box-shadow: -7px 0px 5px 0px var(--color30);
   }
 .video-list
 {
@@ -314,4 +315,18 @@ label.active[for = "video-add"]
     height: 75px;
     margin-top: 25px;
     margin: 10px auto;
+}
+#logo
+{
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    position: absolute;
+    z-index: -10;
+}
+label[for = "logo"]
+{
+    color: var(--color10);
+    cursor: pointer;
+    font-weight: 600;
 }

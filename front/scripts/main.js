@@ -20,6 +20,7 @@ window.addEventListener("load", async () =>
         let FileName = (ListAddedVideos[0].name).split('.')[0];
         if (FileName.length > 8) FileName = FileName.slice(0,9) + "...";
         firstFileNameDOM.textContent = FileName + '.' + (ListAddedVideos[0].name).split('.')[1];
+        if (firstFileNameDOM && document.querySelector('.video-name-container'))
         document.querySelector('.video-name-container').append(firstFileNameDOM);
         
         video.src = URL.createObjectURL(fileInput.files[0]);
@@ -105,6 +106,9 @@ window.addEventListener("load", async () =>
         const startTimeDOM = document.querySelector('#time-start');
         const endTimeDOM = document.querySelector('#time-end');
         const qualityDOM = document.querySelector('#quality-checkbox')
+        const logo = document.querySelector('#logo').files[0];
+        const processCountMax = 1 + (logo ? 1 : 0);
+        let processCount = 1;
         let ratioDOM;
         document.querySelectorAll('[type=radio]').forEach(elem =>
             {
@@ -124,19 +128,29 @@ window.addEventListener("load", async () =>
         let cutVideo;
         async function progressCallback(progress)
         {   
+            
             if (!progress.time) return;
-            const complete = parseFloat((progress.time / duration).toFixed(3));
+            const complete = parseFloat((+progress.time / +duration).toFixed(3));
             if (complete >= 1)
             {
-                videoContainer.classList.add('active');
-                progressMain.classList.remove('active');
-                progressBar.style["width"] = "0.0%";
-                percentage.textContent = "0.0%";
+                if (processCount >= processCountMax)
+                {
+                    videoContainer.classList.add('active');
+                    progressMain.classList.remove('active');
+                    progressBar.style["width"] = "0.0%";
+                    percentage.textContent = "0.0%";
+                }
+                else
+                {
+                    processCount = processCount + 1;
+                    console.log(processCount)
+                }
+
             }
             else if (complete * 100 + 1 <= 100)
             {
                 progressBar.style["width"] = (complete * 100 + 1).toFixed(1) + "%";
-                percentage.textContent = (complete * 100 + 1).toFixed(1) + "%";
+                percentage.textContent = (complete * 100 + 1).toFixed(1) + "% (" + processCount + "/" + processCountMax + ")";
             }
         }
         if (duration <= 0) 
@@ -147,8 +161,10 @@ window.addEventListener("load", async () =>
         
         videoContainer.classList.remove('active');
         progressMain.classList.add('active');
-        if (!useRender) cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} -vcodec copy -acodec copy output.mp4`, progressCallback);
-        else cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} output.mp4`, progressCallback);
+
+        const ffmpeg = createFFmpeg({log : true})
+        if (!useRender) cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} -vcodec copy -acodec copy output.mp4`, progressCallback, ffmpeg);
+        else cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} output.mp4`, progressCallback, ffmpeg);
         //if (!useRender) cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} -vcodec copy -acodec copy output.mp4`, progressCallback);
         //else cutVideo = await executeFFmpegCommand(fileInput.files[0], `-i input.mp4 -vf "scale=-1:720,pad=1280:ih:(ow-iw)/2" output.mp4`, progressCallback);
 
@@ -156,6 +172,16 @@ window.addEventListener("load", async () =>
         // {
         //     cutVideo = await concatTwoVideos(ListAddedVideos[0], ListAddedVideos[1]);
         // }
+        //await putTextOnVideo(cutVideo, "Hello, world!");  
+        
+        if (logo) 
+        {
+            cutVideo = await putLogoOnVideo(cutVideo, logo, ffmpeg);
+
+        }
+
+        
+        console.log("______________________________________________________________________")
         video.src = URL.createObjectURL(cutVideo);
         console.log(video.src);
         video.onloadeddata = () =>
@@ -168,6 +194,7 @@ window.addEventListener("load", async () =>
 
 
     })
+    if (fileAdd)
     fileAdd.addEventListener('change', (event) =>
     {
         ListAddedVideos.push(event.target.files[0]);
@@ -186,24 +213,22 @@ window.addEventListener("load", async () =>
 
 
 
-async function executeFFmpegCommand(BinaryData, command, progressCallback)
+async function executeFFmpegCommand(BinaryData, command, progressCallback, ffmpeg)
 {
     if (!(command instanceof String || typeof command == 'string')) return;
-    const ffmpeg = createFFmpeg({log:false});
+    
     const reader = new FileReader();
     await ffmpeg.load();
-    console.log(...command.split(' '))
+
     const resPromise = new Promise((resolve, reject) =>
     {
         reader.onload = async (event) =>
         {
             ffmpeg.FS('writeFile', 'input.mp4', new Uint8Array(reader.result));
+            console.log(new Uint8Array(reader.result))
             await ffmpeg.run(...command.split(' '))
             const result = new Blob([ffmpeg.FS('readFile', 'output.mp4')]);
             resolve(new File([result], 'video.mp4', {type : "video/mp4"}));
-            //const resFile = new File([result], 'video.mp4', {type : "video/mp4"});
-            //console.log(resFile)
-            //ffmpeg.FS('unlink', 'input.mp4');
         }
         setTimeout(() => {
             reject('Time Limit Exceeded');
@@ -214,6 +239,8 @@ async function executeFFmpegCommand(BinaryData, command, progressCallback)
     return resPromise;
 
 }
+
+
 async function concatTwoVideos(video1, video2)
 {
     const ffmpeg = createFFmpeg({log:false});
@@ -246,9 +273,36 @@ async function concatTwoVideos(video1, video2)
     ffmpeg.FS("writeFile", "video1.mkv", await res1Promise);
     ffmpeg.FS("writeFile", "video2.mkv", await res2Promise);
 
-    let command = `-i video1.mkv -i video2.mkv -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" -map "[v]" -map "[a]" output.mkv`
+    let command = '-i video1.mkv -i video2.mkv -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a] -map "[v]" -map "[a]" output.mkv'
     await ffmpeg.run(...command.split(' '));
     console.log(ffmpeg.FS('readFile', 'output.mkv'))
     // const result = new Blob([ffmpeg.FS('readFile', 'output.mkv')]);
     // return (new File([result], 'video.mkv', {type : "video/mkv"}));
+}
+async function putLogoOnVideo(BinaryData, logo, ffmpeg)
+{
+    const resPromise = new Promise((resolve, reject) =>
+    {
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(BinaryData);
+        
+        reader.onload = async (event) =>
+        {
+            ffmpeg.FS('writeFile', 'in.mp4', new Uint8Array(reader.result));
+            const logoReader = new FileReader();
+            logoReader.readAsArrayBuffer(logo);
+            logoReader.onload = async (ev) =>
+            {
+                ffmpeg.FS('writeFile', 'logo.png', new Uint8Array(logoReader.result));
+                await ffmpeg.run('-i', 'logo.png', '-vf', 'scale=50:50', 'fixed-logo.png');
+                await ffmpeg.run('-y', '-i', 'in.mp4', '-i', 'fixed-logo.png', '-filter_complex', 'overlay=x=main_w*0.01:y=main_h*0.01', 'out.mp4')
+                const result = new Blob([ffmpeg.FS('readFile', 'out.mp4')]);
+                resolve(new File([result], 'video.mp4', {type : "video/mp4"}));
+            }
+        }
+        setTimeout(() => {
+            reject('Time Limit Exceeded')
+        }, 3600000);
+    })
+    return resPromise;
 }
