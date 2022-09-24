@@ -9,7 +9,7 @@ app.use((req,res,next) =>
 })
 app.use(express.static("front"))
 
-app.listen(5000, (err) => 
+app.listen(process.env.PORT || 5000, (err) => 
 {
     if (err)
     console.log(err)
