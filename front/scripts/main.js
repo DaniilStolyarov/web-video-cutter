@@ -4,18 +4,28 @@ window.addEventListener("load", async () =>
 {
     const fileInput = document.getElementById("video-input");
     const fileInputLabel = document.querySelector("[for = video-input]");
+    const fileAdd = document.getElementById("video-add");
     const video = document.getElementsByTagName("video")[0];
     const videoContainer = document.getElementsByClassName("video-container")[0];
     const startEncoding = document.querySelector(".start-encoding");
-
+    const ListAddedVideos = [];
     fileInput.onchange = async (event) =>
     {  
         videoContainer.classList.add('active');
         fileInputLabel.classList.remove('active');
 
+        ListAddedVideos.push(fileInput.files[0]);
+        const firstFileNameDOM = document.createElement('div');
+        firstFileNameDOM.classList.add("video-name");
+        let FileName = (ListAddedVideos[0].name).split('.')[0];
+        if (FileName.length > 8) FileName = FileName.slice(0,9) + "...";
+        firstFileNameDOM.textContent = FileName + '.' + (ListAddedVideos[0].name).split('.')[1];
+        document.querySelector('.video-name-container').append(firstFileNameDOM);
+        
         video.src = URL.createObjectURL(fileInput.files[0]);
         video.onloadedmetadata = (ev) =>
         {
+            
             document.querySelector('#time-end').value = (new Date(+video.duration*1000 + (new Date()).getTimezoneOffset() * 60000)).toTimeString().split(' ')[0];
             document.querySelector('#time-start').addEventListener("change", (event)=>
             {
@@ -64,6 +74,7 @@ window.addEventListener("load", async () =>
                 const date = (new Date(event.target.value*1000 + (new Date()).getTimezoneOffset() * 60000)).toTimeString().split(' ')[0];
                 document.getElementById("time-start").value = date;
             }
+                video.currentTime = +sliders[0].value;
             });
             
             sliders[1].addEventListener('input', (event) => {
@@ -73,6 +84,7 @@ window.addEventListener("load", async () =>
                 const date = (new Date(event.target.value*1000 + (new Date()).getTimezoneOffset() * 60000)).toTimeString().split(' ')[0];
                 document.getElementById("time-start").value = date;
                 document.getElementById("time-end").value = date;
+                video.currentTime = +sliders[0].value;
             }
             else
             {
@@ -137,6 +149,13 @@ window.addEventListener("load", async () =>
         progressMain.classList.add('active');
         if (!useRender) cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} -vcodec copy -acodec copy output.mp4`, progressCallback);
         else cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} output.mp4`, progressCallback);
+        //if (!useRender) cutVideo = await executeFFmpegCommand(fileInput.files[0], `-ss ${start} -to ${end} -i input.mp4 -aspect ${ratio} -vcodec copy -acodec copy output.mp4`, progressCallback);
+        //else cutVideo = await executeFFmpegCommand(fileInput.files[0], `-i input.mp4 -vf "scale=-1:720,pad=1280:ih:(ow-iw)/2" output.mp4`, progressCallback);
+
+        // if (ListAddedVideos.length > 1)
+        // {
+        //     cutVideo = await concatTwoVideos(ListAddedVideos[0], ListAddedVideos[1]);
+        // }
         video.src = URL.createObjectURL(cutVideo);
         console.log(video.src);
         video.onloadeddata = () =>
@@ -147,6 +166,19 @@ window.addEventListener("load", async () =>
             percentage.textContent = "0.0%";
         }
 
+
+    })
+    fileAdd.addEventListener('change', (event) =>
+    {
+        ListAddedVideos.push(event.target.files[0]);
+        const firstFileNameDOM = document.createElement('div');
+        firstFileNameDOM.classList.add("video-name");
+        let FileName = (ListAddedVideos[ListAddedVideos.length - 1].name).split('.')[0];
+        if (FileName.length > 8) FileName = FileName.slice(0,9) + "...";
+        firstFileNameDOM.textContent = FileName + '.' + (ListAddedVideos[ListAddedVideos.length - 1].name).split('.')[1];
+        document.querySelector('.video-name-container').append(firstFileNameDOM);
+        console.log(ListAddedVideos)
+        event.target.value = "";
     })
 })  
 
@@ -168,10 +200,10 @@ async function executeFFmpegCommand(BinaryData, command, progressCallback)
             ffmpeg.FS('writeFile', 'input.mp4', new Uint8Array(reader.result));
             await ffmpeg.run(...command.split(' '))
             const result = new Blob([ffmpeg.FS('readFile', 'output.mp4')]);
+            resolve(new File([result], 'video.mp4', {type : "video/mp4"}));
             //const resFile = new File([result], 'video.mp4', {type : "video/mp4"});
             //console.log(resFile)
             //ffmpeg.FS('unlink', 'input.mp4');
-            resolve(new File([result], 'video.mp4', {type : "video/mp4"}));
         }
         setTimeout(() => {
             reject('Time Limit Exceeded');
@@ -181,4 +213,42 @@ async function executeFFmpegCommand(BinaryData, command, progressCallback)
     ffmpeg.setProgress(progressCallback);
     return resPromise;
 
+}
+async function concatTwoVideos(video1, video2)
+{
+    const ffmpeg = createFFmpeg({log:false});
+    const reader1 = new FileReader();
+    const reader2 = new FileReader();
+    await ffmpeg.load();
+    reader1.readAsArrayBuffer(video1);
+    reader2.readAsArrayBuffer(video2);
+    const res1Promise = new Promise((resolve, reject) =>
+    {
+        reader1.onload = async (event) =>
+        {
+            resolve(new Uint8Array(reader1.result));
+        }
+        setTimeout(() => {
+            reject('Time Limit Exceeded');
+        }, 3600000);
+    })
+    const res2Promise = new Promise((resolve, reject) =>
+    {
+        reader2.onload = async (event) =>
+        {
+            resolve(new Uint8Array(reader2.result));
+        }
+        setTimeout(() => {
+            reject('Time Limit Exceeded');
+        }, 3600000);
+    })
+
+    ffmpeg.FS("writeFile", "video1.mkv", await res1Promise);
+    ffmpeg.FS("writeFile", "video2.mkv", await res2Promise);
+
+    let command = `-i video1.mkv -i video2.mkv -filter_complex "[0:v] [0:a] [1:v] [1:a] concat=n=2:v=1:a=1 [v] [a]" -map "[v]" -map "[a]" output.mkv`
+    await ffmpeg.run(...command.split(' '));
+    console.log(ffmpeg.FS('readFile', 'output.mkv'))
+    // const result = new Blob([ffmpeg.FS('readFile', 'output.mkv')]);
+    // return (new File([result], 'video.mkv', {type : "video/mkv"}));
 }

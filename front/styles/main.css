@@ -56,7 +56,7 @@ body
     margin: 15px 30px;
     position: relative;
     height: 80%;
-    width: 100%;
+    width: 95%;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -92,7 +92,7 @@ label.active[for = "video-input"]
     width: 100%;
     height: 100%;
     display: flex;
-    justify-content: flex-start;
+    justify-content: space-between;
 }
 .video-group
 {
@@ -114,7 +114,7 @@ video
     width: fit-content;
     border: 4px dashed var(--color10);
     border-radius: 20px;
-    margin: 20px 50px;
+    margin: 20px 30px;
     display: flex;
     justify-content: space-between;
     flex-direction: column;
@@ -123,8 +123,8 @@ video
 .option
 {
     display: block;
-    width: 315px;
-    margin: 10px 30px;
+    width: 275px;
+    margin: 10px 20px;
     display: flex;
     justify-content:space-between;
 }
@@ -195,17 +195,18 @@ video
   }
   
   .slider-container input[type="range"]{
-    height: 5em;
+    height: 7em;
     display: block;
     margin: 0;
     width: 100%;
     overflow: hidden;
     border-radius: 0 0 20px 20px;
-    border: 2px solid var(--color10);
+    
+    border: 3px solid var(--color10);
   }
   
   .slider-container input[type="range"]:last-child{
-    margin-top: -5em;
+    margin-top: -7em;
   }
   
   input[type="range"]::-webkit-slider-thumb {
@@ -222,7 +223,7 @@ video
   input[type='range'] {
     overflow: hidden;
     -webkit-appearance: none;
-    background-color: var(--color60);
+    background-color: var(--color30);
 
   }
   
@@ -232,13 +233,85 @@ video
   }
   
   input[type='range']::-webkit-slider-thumb {
-    width: 7px;
+    width: 10px;
     -webkit-appearance: none;
-    height: 5em;
+    height: 7em;
     cursor: ew-resize;
-    background: rgb(59, 58, 133);
-    box-shadow: 0 0 3px rgb(59, 58, 133);
+    background: rgb(64, 169, 255);
+    box-shadow: 5px 0px 10px 0px rgb(64, 169, 255);
     margin: 0;
     padding: 0;
     
   }
+  #first-slider::-webkit-slider-thumb
+  {
+
+    box-shadow: -5px 0px 10px 0px rgb(64, 169, 255);
+  }
+.video-list
+{
+    width: 350px;
+    border: 4px dashed var(--color10);
+    border-radius: 20px;
+    margin: 20px 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.video-name-container
+{
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    justify-content: flex-start;
+    overflow: auto;
+    width: 95%;
+    margin: 10px auto 0;
+}
+.video-name-container::-webkit-scrollbar {
+    width: 10px;
+  
+  }
+  
+  .video-name-container::-webkit-scrollbar-track {
+    -webkit-box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
+    box-shadow: 5px 5px 5px -5px rgba(34, 60, 80, 0.2) inset;
+    background-color: #f9f9fd;
+    
+
+  }
+  
+  .video-name-container::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: linear-gradient(180deg, #00c6fb, #005bea);
+  }
+.video-name
+{
+    border-bottom: 2px solid var(--color10);
+    height: 2em;
+    margin: 10px auto;
+    text-align: center;
+    width: 70%;
+    
+}
+#video-add
+{
+   
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    position: absolute;
+    z-index: -10;
+}
+label.active[for = "video-add"]
+{
+    display: block;
+    background: url("/icons/insertVideo.png");
+    background-size: contain;
+    background-repeat: no-repeat    ;
+    cursor: pointer;
+    width: 75px;
+    height: 75px;
+    margin-top: 25px;
+    margin: 10px auto;
+}
