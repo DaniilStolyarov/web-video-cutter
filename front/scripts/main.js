@@ -179,8 +179,6 @@ window.addEventListener("load", async () =>
             cutVideo = await putLogoOnVideo(cutVideo, logo, ffmpeg);
 
         }
-
-        
         console.log("______________________________________________________________________")
         video.src = URL.createObjectURL(cutVideo);
         console.log(video.src);
@@ -191,8 +189,6 @@ window.addEventListener("load", async () =>
             progressBar.style["width"] = "0.0%";
             percentage.textContent = "0.0%";
         }
-
-
     })
     if (fileAdd)
     fileAdd.addEventListener('change', (event) =>
@@ -269,7 +265,6 @@ async function concatTwoVideos(video1, video2)
             reject('Time Limit Exceeded');
         }, 3600000);
     })
-
     ffmpeg.FS("writeFile", "video1.mkv", await res1Promise);
     ffmpeg.FS("writeFile", "video2.mkv", await res2Promise);
 
